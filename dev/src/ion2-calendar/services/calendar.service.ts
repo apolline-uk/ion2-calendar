@@ -122,13 +122,14 @@ export class CalendarService {
     let _rangeEnd = moment(opt.to).valueOf();
     let isBetween = true;
     let disableWee = opt.disableWeeks.indexOf(_time.toDate().getDay()) !== -1;
-    if (_rangeBeg > 0 && _rangeEnd > 0) {
+    console.log('range beginning:', _rangeBeg, 'range end:', _rangeEnd, 'time:', time);
+    if ((_rangeBeg <= _rangeEnd) && _rangeEnd > 0) {
       if (!opt.canBackwardsSelected) {
         isBetween = !_time.isBetween(_rangeBeg, _rangeEnd, 'days', '[]');
       } else {
         isBetween = moment(_time).isBefore(_rangeBeg) ? false : isBetween;
       }
-    } else if (_rangeBeg > 0 && _rangeEnd === 0) {
+    } else if ((_rangeBeg <= _rangeEnd) && _rangeEnd === 0) {
       if (!opt.canBackwardsSelected) {
         let _addTime = _time.add(1, 'day');
         isBetween = !_addTime.isAfter(_rangeBeg);

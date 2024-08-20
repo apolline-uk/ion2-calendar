@@ -204,7 +204,6 @@ export class CalendarComponent implements ControlValueAccessor, OnInit {
   }
 
   prevYear(): void {
-    if (moment(this.monthOpt.original.time).year() === 1900) { return; }
     const backTime = moment(this.monthOpt.original.time)
       .subtract(1, 'year')
       .valueOf();
