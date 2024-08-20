@@ -122,6 +122,7 @@ export class CalendarService {
     let _rangeEnd = moment(opt.to).valueOf();
     let isBetween = true;
     let disableWee = opt.disableWeeks.indexOf(_time.toDate().getDay()) !== -1;
+    console.log('range beginning:', _rangeBeg, 'range end:', _rangeEnd, 'time:', time);
     if ((_rangeBeg <= _rangeEnd) && _rangeEnd > 0) {
       if (!opt.canBackwardsSelected) {
         isBetween = !_time.isBetween(_rangeBeg, _rangeEnd, 'days', '[]');
