@@ -115,34 +115,34 @@ export class CalendarService {
 
   createCalendarDay(time: number, opt: CalendarModalOptions, month?: number): CalendarDay {
     let _time = moment(time);
-    const date = moment(time);
-    const isToday = moment().isSame(_time, 'days');
-    const dayConfig = this.findDayConfig(_time, opt);
-
-    let disable = false;
-
-    if (dayConfig && isBoolean(dayConfig.disable)) {
-      disable = dayConfig.disable;
-    } else {
-      disable = opt.disableWeeks.indexOf(_time.toDate().getDay()) !== -1;
+    let date = moment(time);
+    let isToday = moment().isSame(_time, 'days');
+    let dayConfig = this.findDayConfig(_time, opt);
+    let _rangeBeg = moment(opt.from).valueOf();
+    let _rangeEnd = moment(opt.to).valueOf();
+    let isBetween = true;
+    let disableWee = opt.disableWeeks.indexOf(_time.toDate().getDay()) !== -1;
+    if (_rangeBeg > 0 && _rangeEnd > 0) {
+      if (!opt.canBackwardsSelected) {
+        isBetween = !_time.isBetween(_rangeBeg, _rangeEnd, 'days', '[]');
+      } else {
+        isBetween = moment(_time).isBefore(_rangeBeg) ? false : isBetween;
+      }
+    } else if (_rangeBeg > 0 && _rangeEnd === 0) {
+      if (!opt.canBackwardsSelected) {
+        let _addTime = _time.add(1, 'day');
+        isBetween = !_addTime.isAfter(_rangeBeg);
+      } else {
+        isBetween = false;
+      }
     }
 
-    if (!disable) {
-      let _rangeBeg = moment(opt.from).valueOf();
-      let _rangeEnd = moment(opt.to).valueOf();
-      let isNotBetween = true;
+    let _disable = false;
 
-      if (_rangeEnd === 0) {
-        _rangeEnd = moment().valueOf();
-      }
-
-      if (!opt.canBackwardsSelected) {
-        isNotBetween = !_time.isBetween(_rangeBeg, _rangeEnd, 'days', '[]');
-      } else {
-        isNotBetween = moment(_time).isBefore(_rangeBeg);
-      }
-
-      disable = isNotBetween;
+    if (dayConfig && isBoolean(dayConfig.disable)) {
+      _disable = dayConfig.disable;
+    } else {
+      _disable = disableWee || isBetween;
     }
 
     let title = new Date(time).getDate().toString();
@@ -151,7 +151,6 @@ export class CalendarService {
     } else if (opt.defaultTitle) {
       title = opt.defaultTitle;
     }
-
     let subTitle = '';
     if (dayConfig && dayConfig.subTitle) {
       subTitle = dayConfig.subTitle;
@@ -169,11 +168,10 @@ export class CalendarService {
       isNextMonth: date.month() > month,
       marked: dayConfig ? dayConfig.marked || false : false,
       cssClass: dayConfig ? dayConfig.cssClass || '' : '',
-      disable,
+      disable: _disable,
       isFirst: date.date() === 1,
       isLast: date.date() === date.daysInMonth(),
     };
-
   }
 
   createCalendarMonth(original: CalendarOriginal, opt: CalendarModalOptions): CalendarMonth {
