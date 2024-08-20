@@ -114,6 +114,7 @@ export class CalendarService {
   }
 
   createCalendarDay(time: number, opt: CalendarModalOptions, month?: number): CalendarDay {
+    console.log('createCalendarDay: time:', time, 'opt:', opt, 'month:', month);
     let _time = moment(time);
     let date = moment(time);
     let isToday = moment().isSame(_time, 'days');
